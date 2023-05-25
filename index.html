@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Hub</title>
+    <link rel="stylesheet" href="hub-style\hub-style.css">
+</head>
+<body>
+    <h1>Game Hub</h1>
+  
+    <button id="game1">Tetris</button>
+    <button id="game2">Chess</button>
+    <button id="game3">Candy Crush</button>
+    <button id="game4">Super Mario</button>
+    
+    <div id="gameContainer"></div>
+  
+    <script>
+      // Function to load game files dynamically
+      function loadGame(gameFile) {
+        // Remove any previously loaded games
+        var gameContainer = document.getElementById('gameContainer');
+        gameContainer.innerHTML = '';
+        
+        // Create a new script element for the game file
+        var script = document.createElement('script');
+        script.src = gameFile;
+        
+        // Append the script to the game container
+        gameContainer.appendChild(script);
+      }
+      
+      // Button click event handlers
+      document.getElementById('game1').addEventListener('click', function() {
+        loadGame('game1.js');
+      });
+      
+      document.getElementById('game2').addEventListener('click', function() {
+        loadGame('game2.js');
+      });
+      
+      document.getElementById('game3').addEventListener('click', function() {
+        loadGame('game3.js');
+      });
+      
+      document.getElementById('game4').addEventListener('click', function() {
+        loadGame('game4.js');
+      });
+    </script>
+    
+</body>
+</html>
+
+
