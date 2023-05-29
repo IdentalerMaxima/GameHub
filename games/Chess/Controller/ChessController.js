@@ -8,6 +8,7 @@ class ChessController {
 
     startGame() {
         this.view.startGame();
+        this.view.selectPiece();
     }
 
 }
