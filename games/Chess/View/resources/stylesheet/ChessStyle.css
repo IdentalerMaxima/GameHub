@@ -33,7 +33,7 @@ h1 {
     font-size: 22px;
     cursor: pointer;
     box-shadow: 0 0 10px #ff1493;
-    text-shadow:0 0 15px #ff1493;
+    text-shadow: 0 0 15px #ff1493;
     transition: all 0.3s;
     position: absolute;
     left: 10px;
@@ -46,4 +46,26 @@ h1 {
 
 #backButton:hover {
     transform: translateX(+10px);
+}
+
+#chessboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 400px;
+    height: 400px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.row {
+    display: flex;
+}
+
+.cell {
+    width: 50px;
+    height: 50px;
+    background-color: transparent;
+    border: 1px solid rgb(125, 5, 123);
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,10 +8,13 @@
     <title>Chess</title>
     <link rel="stylesheet" href="resources\stylesheet\ChessStyle.css">
 </head>
+
 <body>
     <button class="back-btn" id="backButton" onclick="goBack()">Menu</button>
-    
+
     <h1>Chess</h1>
+
+    <div id="chessboard"></div>
 
     <!-- Back button script  -->
     <script>
@@ -21,12 +25,14 @@
             var modifiedUrl = urlParts.slice(0, urlParts.length - 4).join('/') + '/index.html';
             console.log(modifiedUrl);
             window.location.href = modifiedUrl;
-          }
-      </script>
+        }
+    </script>
 
-    <script src="../Controller/ChessController.js"></script>
     <script src="../Model/ChessModel.js"></script>
     <script src="../View/ChessView.js"></script>
+    <script src="../Controller/ChessController.js"></script>
+
     <script src="../Chess.js"></script>
 </body>
+
 </html>
