@@ -25,25 +25,25 @@ h1 {
 
 #backButton {
     font-family: 'Press Start 2P', cursive;
-    background-color: #000;
-    color: #ff1493;
-    border: none;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
     border-radius: 5px;
     padding: 15px 30px;
     font-size: 22px;
     cursor: pointer;
     box-shadow: 0 0 10px #ff1493;
-    text-shadow: 0 0 5px #ff1493, 0 0 10px #ff1493, 0 0 15px #ff1493, 0 0 20px #ff1493;
+    text-shadow:0 0 15px #ff1493;
     transition: all 0.3s;
     position: absolute;
     left: 10px;
     top: 10px;
     width: 8vw;
     height: 8vh;
+
+    min-width: 200px;
 }
 
 #backButton:hover {
-    color: #fff;
-    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #fff;
-    box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+    transform: translateX(+10px);
 }
