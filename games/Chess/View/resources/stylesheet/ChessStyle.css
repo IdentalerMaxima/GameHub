@@ -40,7 +40,6 @@ h1 {
     top: 10px;
     width: 8vw;
     height: 8vh;
-
     min-width: 200px;
 }
 
@@ -53,10 +52,13 @@ h1 {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    width: 400px;
-    height: 400px;
+    width: 500px;
+    height: 500px;
     padding: 10px;
+    padding-top: 60px;
     box-sizing: border-box;
+    
+
 }
 
 .row {
@@ -64,8 +66,24 @@ h1 {
 }
 
 .cell {
+    width: 60px;
+    height: 60px;
+    background-color: rgb(27, 25, 25);
+    border: 1px solid rgb(172, 10, 99);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#checssboardContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+img {
     width: 50px;
     height: 50px;
-    background-color: transparent;
-    border: 1px solid rgb(125, 5, 123);
 }
