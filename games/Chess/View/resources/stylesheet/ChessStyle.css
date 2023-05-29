@@ -1,0 +1,49 @@
+/* styles.css */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+
+body {
+    /* background-color: #000; */
+    background-image: url('../../../../../hub-style/backgrounds/retrowave4.jpg');
+    background-size: cover;
+    color: #FFF;
+    font-family: 'Press Start 2P', cursive;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+h1 {
+    text-align: center;
+    padding: 20px;
+    font-size: 48px;
+    text-shadow: 2px 2px #FF0000;
+}
+
+
+#backButton {
+    font-family: 'Press Start 2P', cursive;
+    background-color: #000;
+    color: #ff1493;
+    border: none;
+    border-radius: 5px;
+    padding: 15px 30px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #ff1493;
+    text-shadow: 0 0 5px #ff1493, 0 0 10px #ff1493, 0 0 15px #ff1493, 0 0 20px #ff1493;
+    transition: all 0.3s;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 8vw;
+    height: 8vh;
+}
+
+#backButton:hover {
+    color: #fff;
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #fff;
+    box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+}

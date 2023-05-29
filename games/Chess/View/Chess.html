@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess</title>
+    <link rel="stylesheet" href="resources\stylesheet\ChessStyle.css">
+</head>
+<body>
+    <button class="back-btn" id="backButton" onclick="goBack()">Menu</button>
+    
+    <h1>Chess</h1>
+
+    <script>
+        function goBack() {
+            var currentUrl = window.location.href;
+            var urlParts = currentUrl.split('/');
+            console.log(urlParts);
+            var modifiedUrl = urlParts.slice(0, urlParts.length - 4).join('/') + '/index.html';
+            console.log(modifiedUrl);
+            window.location.href = modifiedUrl;
+          }
+      </script>
+    <!-- <script src="../Controller/ChessController/js"></script> -->
+</body>
+</html>
