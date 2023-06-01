@@ -10,32 +10,9 @@
 </head>
 
 <body>
-    <button class="back-btn" id="backButton" onclick="goBack()">Menu</button>
+    <script src="generateChessHtml.js"></script>
+    <script>generateChessHtml();</script>
 
-    <h1>Chess</h1>
-
-    <div id="checssboardContainer">
-        <div id="chessboard"></div>
-    </div>
-    
-
-    <!-- Back button script  -->
-    <script>
-        function goBack() {
-            var currentUrl = window.location.href;
-            var urlParts = currentUrl.split('/');
-            console.log(urlParts);
-            var modifiedUrl = urlParts.slice(0, urlParts.length - 4).join('/') + '/index.html';
-            console.log(modifiedUrl);
-            window.location.href = modifiedUrl;
-        }
-    </script>
-
-    <script src="../Model/ChessModel.js"></script>
-    <script src="../View/ChessView.js"></script>
-    <script src="../Controller/ChessController.js"></script>
-
-    <script src="../Chess.js"></script>
 </body>
 
 </html>
