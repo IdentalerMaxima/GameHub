@@ -1,47 +1,88 @@
-function generateChessHtml() {
-
+async function generateChessHtml() {
     const container = document.createElement('div');
 
-    const backButtonScript = document.createElement('script');
-    backButtonScript.src = '../Model/createBackButton.js';
+    await addButton(container);
+    await addTitle(container);
+    await addBoard(container);
+    await addScripts(container);
 
-    backButtonScript.addEventListener('load', function () {
-        const backButton = createBackButton();
-        container.appendChild(backButton);
+    
+}
+
+
+async function addButton(container) {
+    await new Promise((resolve) => {
+        const backButtonScript = document.createElement('script');
+        backButtonScript.src = '../Model/createBackButton.js';
+
+        backButtonScript.addEventListener('load', function () {
+            const backButton = createBackButton();
+            container.appendChild(backButton);
+            resolve();
+        });
+
+        document.head.appendChild(backButtonScript);
+        console.log("backButtonScript loaded");
     });
+}
 
-    document.head.appendChild(backButtonScript);
+async function addTitle(container) {
+    await new Promise((resolve) => {
+        const title = document.createElement('h1');
+        title.id = 'title';
+        title.textContent = 'Chess';
+        container.appendChild(title);
+        resolve();
+        console.log("title loaded");
+    });
+}
 
-    const heading = document.createElement('h1');
-    heading.textContent = 'Chess';
-    container.appendChild(heading);
+async function addBoard(container) {
+    await new Promise((resolve) => {
+        const chessboardContainer = document.createElement('div');
+        chessboardContainer.id = 'chessboardContainer';
 
-    const chessboardContainer = document.createElement('div');
-    chessboardContainer.id = 'checssboardContainer';
+        const chessboard = document.createElement('div');
+        chessboard.id = 'chessboard';
+        chessboardContainer.appendChild(chessboard);
 
-    const chessboard = document.createElement('div');
-    chessboard.id = 'chessboard';
-    chessboardContainer.appendChild(chessboard);
+        container.appendChild(chessboardContainer);
+        resolve();
+        console.log("chessboard loaded");
+    });
+}
 
-    container.appendChild(chessboardContainer);
+async function addScripts(container) {
+    await new Promise((resolve) => {
+        const scripts = [
+            '../Model/ChessModel.js',
+            '../View/ChessView.js',
+            '../Controller/ChessController.js',
+            '../Chess.js'
+        ];
 
-    const chessModelScript = document.createElement('script');
-    chessModelScript.src = '../Model/ChessModel.js';
+        let loadedCount = 0;
 
-    const chessViewScript = document.createElement('script');
-    chessViewScript.src = '../View/ChessView.js';
+        function loadNextScript() {
+            if (loadedCount >= scripts.length) {
+                resolve();
+                return;
+            }
 
-    const chessControllerScript = document.createElement('script');
-    chessControllerScript.src = '../Controller/ChessController.js';
+            const script = document.createElement('script');
+            script.src = scripts[loadedCount];
 
-    const chessScript = document.createElement('script');
-    chessScript.src = '../Chess.js';
+            script.addEventListener('load', function () {
+                loadedCount++;
+                loadNextScript();
+            });
 
-    container.appendChild(chessModelScript);
-    container.appendChild(chessViewScript);
-    container.appendChild(chessControllerScript);
-    container.appendChild(chessScript);
+            container.appendChild(script);
+        }
 
-
-    document.body.appendChild(container);
+        loadNextScript();
+        document.body.appendChild(container);
+        console.log("scripts loaded");
+        
+    });
 }
