@@ -3,38 +3,74 @@ class ChessModel {
         console.log("ChessModel.js loaded");
     }
 
-    getBoardConfig() {
-        const boardConfig = [
-            ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
-            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
-        ];
+    //Board logic
+    createBoard() {
+        const board = new Array(8);
 
-        return boardConfig;
+        for (let i = 0; i < board.length; i++) {
+            board[i] = new Array(8);
+        }
+
+        this.fillBoard(board);
+
+        console.log(board);
+
+        return board;
     }
 
-    getPieces() {
-        var pieces = {
-            "R": "../View/resources/pieces/chess-rook-alt.png",
-            "N": "../View/resources/pieces/chess-knight-alt.png",
-            "B": "../View/resources/pieces/chess-bishop.png",
-            "Q": "../View/resources/pieces/chess-queen.png",
-            "K": "../View/resources/pieces/chess-king.png",
-            "P": "../View/resources/pieces/chess-pawn-alt.png",
-            "r": "../View/resources/pieces/chess-rook-altb.png",
-            "n": "../View/resources/pieces/chess-knight-altb.png",
-            "b": "../View/resources/pieces/chess-bishopb.png",
-            "q": "../View/resources/pieces/chess-queenb.png",
-            "k": "../View/resources/pieces/chess-kingb.png",
-            "p": "../View/resources/pieces/chess-pawn-altb.png",
-            " ": "../View/resources/pieces/empty.png"
-        };
+    fillBoard(board) {
+        const colors = ['black', 'white'];
 
-        return pieces;
+        for (let j = 0; j < 8; j++) {
+            board[0][j] = this.createPiece(colors[0], [0, j]);
+        }
+    
+        for (let j = 0; j < 8; j++) {
+            board[1][j] = this.createPawn(colors[0], [1, j]);
+        }
+    
+        for (let j = 0; j < 8; j++) {
+            board[6][j] = this.createPawn(colors[1], [6, j]);
+        }
+    
+        for (let j = 0; j < 8; j++) {
+            board[7][j] = this.createPiece(colors[1], [7, j]);
+        }
     }
+
+    createPiece(color, square) {
+        let piece;
+    
+        switch (square[1]) {
+            case 0:
+            case 7:
+                piece = new Rook(color, square);
+                break;
+            case 1:
+            case 6:
+                piece = new Knight(color, square);
+                break;
+            case 2:
+            case 5:
+                piece = new Bishop(color, square);
+                break;
+            case 3:
+                piece = new Queen(color, square);
+                break;
+            case 4:
+                piece = new King(color, square);
+                break;
+            default:
+                break;
+        }
+    
+        return piece;
+    }
+    
+    createPawn(color, square) {
+        return new Pawn(color, square);
+    }
+
+
+
 }

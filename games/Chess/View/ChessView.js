@@ -2,8 +2,6 @@ class ChessView {
     constructor(model) {
         console.log("ChessView.js loaded");
         this.model = model;
-
-
     }
 
     startGame() {
@@ -11,32 +9,40 @@ class ChessView {
     }
 
     createBoard() {
-        const boardConfig = this.model.getBoardConfig();
-        const board = document.getElementById('chessboard');
-        board.innerHTML = '';
-
-        for (let row = 0; row < boardConfig.length; row++) {
-            const rowElement = document.createElement('div');
-            rowElement.classList.add('row');
-
-            for (let col = 0; col < boardConfig[row].length; col++) {
-                const cellElement = document.createElement('div');
-                cellElement.classList.add('cell');
-                const pieceLetter = boardConfig[row][col];
-
-                if (pieceLetter) {
-                    const pieceImage = document.createElement('img');
-                    pieceImage.src = this.model.getPieces()[pieceLetter];
-                    cellElement.appendChild(pieceImage);
-                }
-
-                rowElement.appendChild(cellElement);
-            }
-
-            board.appendChild(rowElement);
+        const board = this.model.createBoard();
+      
+        const chessboard = document.getElementById('chessboard');
+      
+        if (!chessboard) {
+          console.error('Chessboard element not found in the DOM');
+          return;
         }
-
-    }
+      
+        const fragment = document.createDocumentFragment();
+      
+        for (let i = 0; i < board.length; i++) {
+          const row = document.createElement('div');
+          row.classList.add('chessboard-row');
+      
+          for (let j = 0; j < board[i].length; j++) {
+            const tile = document.createElement('div');
+            tile.classList.add('chessboard-tile');
+      
+            if (board[i][j]) {
+              const piece = document.createElement('img');
+              piece.src = board[i][j].image;
+              piece.classList.add('chessboard-piece');
+              tile.appendChild(piece);
+            }
+      
+            row.appendChild(tile);
+          }
+          fragment.appendChild(row);
+        }
+      
+        chessboard.appendChild(fragment);
+      }
+      
 
     selectPiece() {
         const chessPieces = document.querySelectorAll('img');

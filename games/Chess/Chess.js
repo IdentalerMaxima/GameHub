@@ -4,6 +4,7 @@ if (window.location.pathname !== '/games/Chess/View/Chess.html') {
     window.location.href = '/games/Chess/View/Chess.html';
 } else {   
     var chessController = new ChessController();
+    console.log("Chess.js loaded");
 }
 
 
