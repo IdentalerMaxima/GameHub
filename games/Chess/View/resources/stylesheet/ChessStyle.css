@@ -69,11 +69,11 @@ body {
 
 }
 
-.row {
+.chessboard-row {
     display: flex;
 }
 
-.cell {
+.chessboard-tile {
     width: 60px;
     height: 60px;
     background-color: rgb(27, 25, 25);

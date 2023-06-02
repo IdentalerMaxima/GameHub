@@ -41,31 +41,25 @@ class ChessView {
         }
       
         chessboard.appendChild(fragment);
+
+        this.selectPiece();
       }
       
 
     selectPiece() {
-        const chessPieces = document.querySelectorAll('img');
+        const tiles = document.querySelectorAll('.chessboard-tile');
         let selectedTile = null;
 
-        chessPieces.forEach(piece => {
-            piece.addEventListener('click', () => {
-                console.log(piece);
-                const tile = piece.parentElement;
+        tiles.forEach(tile => {
+            tile.addEventListener('click', () => {
+                console.log(tile);
                 if(selectedTile) {
-                    selectedTile.style.backgroundColor = '';
+                    tile.style.backgroundColor = '';
                 }
 
                 tile.style.backgroundColor = 'rgb(115,115,115)';
 
                 selectedTile = tile;
-
-
-
-
-
-
-
                 
                 // Logic to calculate and display the possible steps for the clicked piece
                 // You'll need to implement the logic based on the chess rules
