@@ -17,8 +17,8 @@ body {
 
 #title{
     text-align: center;
-    padding: 20px;
-    font-size: 48px;
+    padding: 15px;
+    font-size: 42px;
     text-shadow: 2px 2px #FF0000;
 }
 
@@ -52,7 +52,7 @@ body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    margin-top: 20px;
+    margin-top: 0px;
 }
 
 #chessboard {
@@ -63,7 +63,6 @@ body {
     width: 500px;
     height: 500px;
     padding: 10px;
-    padding-top: 60px;
     box-sizing: border-box;
     
 

@@ -23,17 +23,8 @@ class ChessModel {
 
         for (let j = 0; j < 8; j++) {
             board[0][j] = this.createPiece(colors[0], [0, j]);
-        }
-    
-        for (let j = 0; j < 8; j++) {
             board[1][j] = this.createPawn(colors[0], [1, j]);
-        }
-    
-        for (let j = 0; j < 8; j++) {
             board[6][j] = this.createPawn(colors[1], [6, j]);
-        }
-    
-        for (let j = 0; j < 8; j++) {
             board[7][j] = this.createPiece(colors[1], [7, j]);
         }
     }
@@ -69,6 +60,13 @@ class ChessModel {
     
     createPawn(color, square) {
         return new Pawn(color, square);
+    }
+
+    //Piece logic
+    showPossibleMoves(piece) {
+        const possibleMoves = [];
+
+        return possibleMoves;
     }
 
 
