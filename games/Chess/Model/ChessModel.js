@@ -1,6 +1,7 @@
 class ChessModel {
     constructor() {
-        console.log("ChessModel.js loaded");
+        //console.log("ChessModel.js loaded");
+        this.board = [];
     }
 
     //Board logic
@@ -13,8 +14,11 @@ class ChessModel {
 
         this.fillBoard(board);
 
-        console.log(board);
+        this.board = board;
 
+        // console.log("board: " + board);
+        // console.log(board[0][0]);
+        
         return board;
     }
 
@@ -69,6 +73,7 @@ class ChessModel {
         return possibleMoves;
     }
 
-
-
+    getBoard() {
+        return this.board;
+    }
 }

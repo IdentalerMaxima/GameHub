@@ -2,7 +2,7 @@ class Pieces {
     constructor(color, square) {
         this.color = color;
         this.square = square;
-        this.direction = color === 'white' ? 1 : -1;
+        this.direction = color === 'white' ? -1 : 1;
     }
 }
 
@@ -33,8 +33,6 @@ class Pawn extends Pieces {
                 validMoves.push(attackSquare);
             }
         }
-
-        console.log(validMoves);
         return validMoves;
     }
     isValidSquare(square, board) {
@@ -43,8 +41,8 @@ class Pawn extends Pieces {
     }
 
     isFirstMove() {
-        return this.color === 'white' && this.square[0] === 1 ||
-            this.color === 'black' && this.square[0] === 6;
+        return this.color === 'white' && this.square[0] === 6 ||
+            this.color === 'black' && this.square[0] === 1;
     }
 
     hasOpponentPiece(square, board) {

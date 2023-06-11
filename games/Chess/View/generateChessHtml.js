@@ -2,11 +2,7 @@ async function generateChessHtml() {
     const container = document.createElement('div');
 
     await addButton(container);
-
-
     document.body.appendChild(container);
-
-
 }
 
 
@@ -22,7 +18,7 @@ async function addButton(container) {
         });
 
         document.head.appendChild(backButtonScript);
-        console.log("backButtonScript loaded");
+        //console.log("backButtonScript loaded");
     });
 }
 

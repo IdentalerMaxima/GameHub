@@ -1,20 +1,15 @@
 class ChessView {
   constructor(model) {
-    console.log("ChessView.js loaded");
+    //console.log("ChessView.js loaded");
     this.model = model;
-  }
-
-  startGame() {
-    this.createBoard();
   }
 
   createBoard() {
     const board = this.model.createBoard();
+    const chessboardDiv = document.getElementById('chessboard');
 
-    const chessboard = document.getElementById('chessboard');
-
-    if (!chessboard) {
-      console.error('Chessboard element not found in the DOM');
+    if (!chessboardDiv) {
+      console.error('ChessboardDiv element not found in the DOM');
       return;
     }
 
@@ -41,9 +36,7 @@ class ChessView {
       fragment.appendChild(row);
     }
 
-    chessboard.appendChild(fragment);
-
-    this.selectPiece();
+    chessboardDiv.appendChild(fragment);
   }
 
   getSquareFromTile(tile) {
@@ -52,18 +45,20 @@ class ChessView {
 
     const colIndex = Array.from(row.children).indexOf(tile); // Get the column index
 
-    return this.board[rowIndex, colIndex]; // Return the square coordinates as [row, column]
+    return [rowIndex, colIndex]; // Return the square coordinates as [row, column]
   }
 
   getPieceAtSquare(square) {
     const [row, col] = square;
-    return this.board[row][col]; // Assuming `board` is the chessboard array
+    const board = this.model.getBoard();
+    return this.model.board[row][col]; // Assuming `board` is the chessboard array
   }
 
   selectPiece() {
     const tiles = document.querySelectorAll('.chessboard-tile');
-    console.log(tiles);
+    //console.log(tiles);
     let selectedTile = null;
+    let highlightedTiles = [];  
 
     tiles.forEach(tile => {
       tile.addEventListener('click', () => {
@@ -76,14 +71,23 @@ class ChessView {
 
           selectedTile = tile;
 
+          highlightedTiles.forEach(highlightedTile => {
+            highlightedTile.classList.remove('highlighted');
+          });
+          highlightedTiles = [];
+
           const square = this.getSquareFromTile(tile); // Extract the square coordinates from the tile
           const piece = this.getPieceAtSquare(square); // Get the piece object at the selected square
 
           if (piece) {
-            const validMoves = piece.getValidMoves(board); // Call getValidMoves() on the piece
-
-            // Use the validMoves array to update the UI or perform other actions
-            console.log(validMoves);
+            const validMoves = piece.getValidMoves(this.model.getBoard()); // Call getValidMoves() on the piece
+            validMoves.forEach(move => {
+              const [row, col] = move;
+              const index = row * 8 + col;
+              const highlightedTile = tiles[index];
+              highlightedTile.classList.add('highlighted'); // Apply the 'highlighted' class
+              highlightedTiles.push(highlightedTile);
+            });
           }
         }
       });
