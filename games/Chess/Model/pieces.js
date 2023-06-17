@@ -3,7 +3,35 @@ class Pieces {
         this.color = color;
         this.square = square;
         this.direction = color === 'white' ? -1 : 1;
+        const validMoves = [];
     }
+
+    isValidSquare(square) {
+        const [row, col] = square;
+        return row >= 0 && row < 8 && col >= 0 && col < 8;
+    }
+
+    canMoveToSquare(square, board) {
+        const [targetRow, targetCol] = square;
+        const [currentRow, currentCol] = this.square;
+      
+        if (targetRow < 0 || targetRow >= 8 || targetCol < 0 || targetCol >= 8) {
+          return false;
+        }
+      
+        if (board[targetRow][targetCol] && board[targetRow][targetCol].color === this.color) {
+          return false;
+        }
+      
+        // Implement the specific move validation rules for the piece
+        // ... your logic here ...
+      
+        return true;
+      }
+
+      updateValidMoves(board) {
+        this.validMoves = this.getValidMoves(board);
+      }
 }
 
 class Pawn extends Pieces {
@@ -15,7 +43,6 @@ class Pawn extends Pieces {
     getValidMoves(board) {
         const validMoves = [];
         const [currentRow, currentCol] = this.square;
-
         const forwardSquare = [currentRow + this.direction, currentCol];
         if (this.isValidSquare(forwardSquare, board) && !board[forwardSquare[0]][forwardSquare[1]]) {
             validMoves.push(forwardSquare);
@@ -34,10 +61,6 @@ class Pawn extends Pieces {
             }
         }
         return validMoves;
-    }
-    isValidSquare(square, board) {
-        const [row, col] = square;
-        return row >= 0 && row < 8 && col >= 0 && col < 8;
     }
 
     isFirstMove() {
@@ -62,6 +85,28 @@ class Knight extends Pieces {
     constructor(color, square) {
         super(color, square);
         this.image = `images/${color}Knight.png`;
+    }
+
+    getValidMoves(board) {
+        const validMoves = [];
+        const [currentRow, currentCol] = this.square;
+
+        const moveSquares = [
+            [currentRow - 2, currentCol - 1],
+            [currentRow - 2, currentCol + 1],
+            [currentRow - 1, currentCol - 2],
+            [currentRow - 1, currentCol + 2],
+            [currentRow + 1, currentCol - 2],
+            [currentRow + 1, currentCol + 2],
+            [currentRow + 2, currentCol - 1],
+            [currentRow + 2, currentCol + 1]
+        ];
+        for (const moveSquare of moveSquares) {
+            if (this.isValidSquare(moveSquare, board) && !board[moveSquare[0]][moveSquare[1]]) {
+                validMoves.push(moveSquare);
+            }
+        }
+        return validMoves;
     }
 }
 
@@ -92,3 +137,4 @@ class Epiece extends Pieces {
         this.image = `images/Empty.png`;
     }
 }
+

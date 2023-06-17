@@ -1,6 +1,5 @@
 class ChessView {
   constructor(model) {
-    //console.log("ChessView.js loaded");
     this.model = model;
   }
 
@@ -40,57 +39,96 @@ class ChessView {
   }
 
   getSquareFromTile(tile) {
-    const row = tile.parentNode; // Get the parent row element
-    const rowIndex = Array.from(row.parentNode.children).indexOf(row); // Get the row index
-
-    const colIndex = Array.from(row.children).indexOf(tile); // Get the column index
-
+    const row = tile.parentNode; 
+    const rowIndex = Array.from(row.parentNode.children).indexOf(row);
+    const colIndex = Array.from(row.children).indexOf(tile);
     return [rowIndex, colIndex]; // Return the square coordinates as [row, column]
   }
 
   getPieceAtSquare(square) {
     const [row, col] = square;
-    const board = this.model.getBoard();
-    return this.model.board[row][col]; // Assuming `board` is the chessboard array
+    return this.model.board[row][col];
+  }
+
+  highlightSelectedSquare(oldTile, tile) {
+    this.resetColors(oldTile);
+    tile.style.backgroundColor = 'rgb(115, 115, 115)';
+    oldTile = tile;
+    return oldTile;
+  }
+
+  highlightPossibleMoves(piece) {
+    const validMoves = piece.getValidMoves(this.model.getBoard());
+    validMoves.forEach(move => {
+      const [row, col] = move;
+      const tile = document.querySelector(`.chessboard-row:nth-child(${row + 1}) .chessboard-tile:nth-child(${col + 1})`);
+      tile.style.backgroundColor = 'rgb(115, 115, 115)';
+    });
+  }
+
+  resetColors(oldTile) {
+    if (!oldTile) {
+      return;
+    }
+    oldTile.style.backgroundColor = '';
+    const piece = this.getPieceAtSquare(this.getSquareFromTile(oldTile));
+    const validMoves = piece.getValidMoves(this.model.getBoard());
+    validMoves.forEach(move => {
+      const [row, col] = move;
+      const tile = document.querySelector(`.chessboard-row:nth-child(${row + 1}) .chessboard-tile:nth-child(${col + 1})`);
+      tile.style.backgroundColor = '';
+    });
   }
 
   selectPiece() {
     const tiles = document.querySelectorAll('.chessboard-tile');
-    //console.log(tiles);
     let selectedTile = null;
-    let highlightedTiles = [];  
-
+    let selectedPiece = null;
+    let validMoves = [];
+  
     tiles.forEach(tile => {
       tile.addEventListener('click', () => {
-        if (tile.classList.contains('has-piece')) {
-          if (selectedTile) {
-            selectedTile.style.backgroundColor = '';
+        if(!selectedPiece){
+          if(tile.classList.contains('has-piece')) {
+            selectedTile = this.highlightSelectedSquare(selectedTile, tile);
+            selectedPiece = this.getPieceAtSquare(this.getSquareFromTile(tile));
+            validMoves = this.highlightPossibleMoves(selectedPiece);
           }
-
-          tile.style.backgroundColor = 'rgb(115,115,115)';
-
-          selectedTile = tile;
-
-          highlightedTiles.forEach(highlightedTile => {
-            highlightedTile.classList.remove('highlighted');
-          });
-          highlightedTiles = [];
-
-          const square = this.getSquareFromTile(tile); // Extract the square coordinates from the tile
-          const piece = this.getPieceAtSquare(square); // Get the piece object at the selected square
-
-          if (piece) {
-            const validMoves = piece.getValidMoves(this.model.getBoard()); // Call getValidMoves() on the piece
-            validMoves.forEach(move => {
-              const [row, col] = move;
-              const index = row * 8 + col;
-              const highlightedTile = tiles[index];
-              highlightedTile.classList.add('highlighted'); // Apply the 'highlighted' class
-              highlightedTiles.push(highlightedTile);
-            });
+        }
+        else {
+          if (tile.classList.contains('has-piece')) {
+            const piece = this.getPieceAtSquare(this.getSquareFromTile(tile));
+            if (piece.color === selectedPiece.color) {
+              selectedPiece = null;
+              return;
+            }
           }
         }
       });
     });
   }
+  
+
+  movePiece(sourceSquare, targetSquare) {
+    const piece = this.getPieceAtSquare(sourceSquare);
+    if (!piece) {
+      return; // 
+    }
+
+    const validMoves = piece.getValidMoves(this.model.getBoard());
+    if (!validMoves.some(move => move[0] === targetSquare[0] && move[1] === targetSquare[1])) {
+      return; 
+    }
+
+    const sourceTile = document.querySelector(`.chessboard-row:nth-child(${sourceSquare[0] + 1}) .chessboard-tile:nth-child(${sourceSquare[1] + 1})`);
+    const targetTile = document.querySelector(`.chessboard-row:nth-child(${targetSquare[0] + 1}) .chessboard-tile:nth-child(${targetSquare[1] + 1})`);
+
+    if (!sourceTile || !targetTile) {
+      return; // 
+    }
+
+    const pieceElement = sourceTile.querySelector('.chessboard-piece');
+    targetTile.appendChild(pieceElement);
+  }
+
 }

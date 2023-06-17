@@ -1,24 +1,15 @@
 class ChessModel {
     constructor() {
-        //console.log("ChessModel.js loaded");
         this.board = [];
     }
-
-    //Board logic
     createBoard() {
         const board = new Array(8);
 
         for (let i = 0; i < board.length; i++) {
             board[i] = new Array(8);
         }
-
         this.fillBoard(board);
-
         this.board = board;
-
-        // console.log("board: " + board);
-        // console.log(board[0][0]);
-        
         return board;
     }
 
@@ -38,27 +29,14 @@ class ChessModel {
     
         switch (square[1]) {
             case 0:
-            case 7:
-                piece = new Rook(color, square);
-                break;
+            case 7: piece = new Rook(color, square); break;
             case 1:
-            case 6:
-                piece = new Knight(color, square);
-                break;
+            case 6: piece = new Knight(color, square); break;
             case 2:
-            case 5:
-                piece = new Bishop(color, square);
-                break;
-            case 3:
-                piece = new Queen(color, square);
-                break;
-            case 4:
-                piece = new King(color, square);
-                break;
-            default:
-                break;
+            case 5: piece = new Bishop(color, square); break;
+            case 3: piece = new Queen(color, square); break;
+            case 4: piece = new King(color, square); break;
         }
-    
         return piece;
     }
     
@@ -71,6 +49,28 @@ class ChessModel {
         const possibleMoves = [];
 
         return possibleMoves;
+    }
+
+    movePiece(fromSquare, toSquare) {
+        const board = this.getBoard();
+        const [fromRow, fromCol] = fromSquare;
+        const [toRow, toCol] = toSquare;
+        const piece = board[fromRow][fromCol];
+      
+        if (!piece) {
+          return false;
+        }
+      
+        if (!piece.canMoveToSquare(toSquare, board)) {
+          return false;
+        }
+
+        board[toRow][toCol] = piece;
+        board[fromRow][fromCol] = null;
+
+        console.log(board);
+
+    piece.updateValidMoves(this.getBoard());
     }
 
     getBoard() {
