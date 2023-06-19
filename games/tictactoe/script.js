@@ -1,3 +1,7 @@
+if (window.location.pathname !== '/games/tictactoe/index.html') {
+    window.location.href = '/games/tictactoe/index.html';
+} 
+
 let playerText = document.getElementById('playerText');
 let restartButton = document.getElementById('restartButton');
 let boxes = Array.from(document.getElementsByClassName('box'));
