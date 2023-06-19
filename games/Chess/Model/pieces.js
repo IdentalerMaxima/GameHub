@@ -22,15 +22,17 @@ class Pieces {
         if (board[targetRow][targetCol] && board[targetRow][targetCol].color === this.color) {
           return false;
         }
-      
-        // Implement the specific move validation rules for the piece
-        // ... your logic here ...
-      
+
         return true;
       }
 
+      clearValidMoves() {
+        this.validMoves = [];
+      }
+    
       updateValidMoves(board) {
-        this.validMoves = this.getValidMoves(board);
+        this.clearValidMoves();
+        return this.getValidMoves(board);
       }
 }
 

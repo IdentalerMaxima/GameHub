@@ -44,6 +44,10 @@ class ChessModel {
         return new Pawn(color, square);
     }
 
+    setBoard(board) {
+        this.board = board;
+    }
+
     //Piece logic
     showPossibleMoves(piece) {
         const possibleMoves = [];
@@ -67,13 +71,11 @@ class ChessModel {
 
         board[toRow][toCol] = piece;
         board[fromRow][fromCol] = null;
-
-        console.log(board);
-
-    piece.updateValidMoves(this.getBoard());
     }
 
     getBoard() {
         return this.board;
     }
+
+    
 }

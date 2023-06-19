@@ -50,63 +50,83 @@ class ChessView {
     return this.model.board[row][col];
   }
 
-  highlightSelectedSquare(oldTile, tile) {
-    this.resetColors(oldTile);
-    tile.style.backgroundColor = 'rgb(115, 115, 115)';
-    oldTile = tile;
-    return oldTile;
-  }
-
-  highlightPossibleMoves(piece) {
-    const validMoves = piece.getValidMoves(this.model.getBoard());
+  highlightPossibleMoves(validMoves, currentSquare) {
+    this.resetColors();
     validMoves.forEach(move => {
       const [row, col] = move;
       const tile = document.querySelector(`.chessboard-row:nth-child(${row + 1}) .chessboard-tile:nth-child(${col + 1})`);
       tile.style.backgroundColor = 'rgb(115, 115, 115)';
     });
+    currentSquare.style.backgroundColor = 'rgb(115, 115, 115)';
+
+    return validMoves;
   }
 
-  resetColors(oldTile) {
-    if (!oldTile) {
-      return;
-    }
-    oldTile.style.backgroundColor = '';
-    const piece = this.getPieceAtSquare(this.getSquareFromTile(oldTile));
-    const validMoves = piece.getValidMoves(this.model.getBoard());
-    validMoves.forEach(move => {
-      const [row, col] = move;
-      const tile = document.querySelector(`.chessboard-row:nth-child(${row + 1}) .chessboard-tile:nth-child(${col + 1})`);
+  resetColors() {
+    const tiles = document.querySelectorAll('.chessboard-tile');
+    tiles.forEach(tile => {
       tile.style.backgroundColor = '';
+      tile.classList.remove('can-move');
+    });
+  }
+  
+  
+
+  isValidMove(tile, selectedPiece) {
+    const targetSquare = this.getSquareFromTile(tile);
+    const piece = this.getPieceAtSquare(targetSquare);
+
+    if (piece && piece.color === selectedPiece.color) {
+      return false;
+    }
+  
+    const validMoves = selectedPiece.getValidMoves(this.model.getBoard());
+    return validMoves.some(move => {
+      const [row, col] = move;
+      return row === targetSquare[0] && col === targetSquare[1];
     });
   }
 
-  selectPiece() {
+  addEventListeners() {
     const tiles = document.querySelectorAll('.chessboard-tile');
-    let selectedTile = null;
-    let selectedPiece = null;
-    let validMoves = [];
   
-    tiles.forEach(tile => {
-      tile.addEventListener('click', () => {
-        if(!selectedPiece){
-          if(tile.classList.contains('has-piece')) {
-            selectedTile = this.highlightSelectedSquare(selectedTile, tile);
-            selectedPiece = this.getPieceAtSquare(this.getSquareFromTile(tile));
-            validMoves = this.highlightPossibleMoves(selectedPiece);
-          }
-        }
-        else {
-          if (tile.classList.contains('has-piece')) {
-            const piece = this.getPieceAtSquare(this.getSquareFromTile(tile));
-            if (piece.color === selectedPiece.color) {
-              selectedPiece = null;
-              return;
-            }
-          }
-        }
+    tiles.forEach((tile) => {
+      tile.addEventListener('click', (event) => {
+        this.handleTileClick(event); 
       });
     });
   }
+  
+  handleTileClick(event) {
+  const tile = event.currentTarget;
+  const hasPiece = tile.classList.contains('has-piece');
+  let selectedPiece = null;
+
+  if (hasPiece) {
+    selectedPiece = this.getPieceAtSquare(this.getSquareFromTile(tile));
+    tile.classList.add('selected');
+    const validMoves = selectedPiece.updateValidMoves(this.model.getBoard());
+    this.highlightPossibleMoves(validMoves, tile);
+  
+  } else {
+    const canMove = tile.style.backgroundColor === 'rgb(115, 115, 115)';
+
+    if (canMove) {
+      const selectedTile = document.querySelector('.selected');
+      this.movePiece(this.getSquareFromTile(selectedTile), this.getSquareFromTile(tile));
+      selectedTile.classList.remove('selected');
+      
+      selectedPiece = null;
+    }
+  }
+}
+
+
+
+  
+  
+
+  
   
 
   movePiece(sourceSquare, targetSquare) {
@@ -115,7 +135,7 @@ class ChessView {
       return; // 
     }
 
-    const validMoves = piece.getValidMoves(this.model.getBoard());
+    let validMoves= piece.getValidMoves(this.model.getBoard());
     if (!validMoves.some(move => move[0] === targetSquare[0] && move[1] === targetSquare[1])) {
       return; 
     }
@@ -129,6 +149,14 @@ class ChessView {
 
     const pieceElement = sourceTile.querySelector('.chessboard-piece');
     targetTile.appendChild(pieceElement);
-  }
 
+    this.resetColors(sourceTile);
+    this.model.movePiece(sourceSquare, targetSquare);
+    sourceTile.classList.remove('has-piece');
+    targetTile.classList.add('has-piece');
+
+
+
+    console.log(this.model.board);
+  }
 }
