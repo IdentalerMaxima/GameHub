@@ -1,0 +1,41 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="TetrisStyle.css">
+    <link rel="icon" type="image/x-icon" href="pictures/logo.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Aoboshi+One&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <div id="left-div">
+            <img src="pictures/logo.png" id="logo">
+            <hr>
+
+            <div id="score-div">
+                <label> Score: </label>
+                <label id="score"></label>
+            </div>
+            <div id="lines-div">
+                <label> Lines: </label>
+                <label id="lines"></label>
+            </div>
+        </div>
+        <div id="game-container">
+            <img src="pictures/background.png" id="background">
+            <canvas id="game-canvas"></canvas>
+        </div>
+    </div>
+</body>
+
+<script src="Tetris.js"></script>
+
+</html>
