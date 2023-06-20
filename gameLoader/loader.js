@@ -21,7 +21,7 @@ document.getElementById('chess').addEventListener('click', function () {
 });
 
 document.getElementById('game3').addEventListener('click', function () {
-    loadGame('game3.js');
+    loadGame('games/tictactoe/script.js');
 });
 
 document.getElementById('game4').addEventListener('click', function () {
