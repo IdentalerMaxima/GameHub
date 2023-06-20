@@ -7,8 +7,8 @@ class ChessController {
     }
 
     startGame() {
-        this.view.createBoard(); //Creates and fills the board
-        this.view.addEventListeners(); //Adds event listeners to the board
+        this.view.createBoard(); 
+        this.view.addEventListeners(); 
         
     }
 

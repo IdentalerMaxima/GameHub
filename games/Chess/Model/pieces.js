@@ -156,10 +156,76 @@ class Bishop extends Pieces {
   }
   
 
-class Queen extends Pieces {
+  class Queen extends Pieces {
     constructor(color, square) {
         super(color, square);
         this.image = `images/${color}Queen.png`;
+    }
+
+    getValidMoves(board) {
+        const validMoves = [];
+        const [currentRow, currentCol] = this.square;
+
+ 
+        const rookDirections = [
+            { row: -1, col: 0 },  
+            { row: 1, col: 0 },   
+            { row: 0, col: -1 }, 
+            { row: 0, col: 1 }    
+        ];
+
+        for (const direction of rookDirections) {
+            let [row, col] = [currentRow, currentCol];
+
+            while (true) {
+                row += direction.row;
+                col += direction.col;
+
+                if (this.isValidSquare([row, col], board)) {
+                    if (!board[row][col]) {
+                        validMoves.push([row, col]);
+                    } else if (board[row][col].color !== this.color) {
+                        validMoves.push([row, col]);
+                        break;
+                    } else {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+
+        const bishopDirections = [
+            { row: -1, col: -1 }, 
+            { row: -1, col: 1 },
+            { row: 1, col: -1 },
+            { row: 1, col: 1 }  
+        ];
+
+        for (const direction of bishopDirections) {
+            let [row, col] = [currentRow, currentCol];
+
+            while (true) {
+                row += direction.row;
+                col += direction.col;
+
+                if (this.isValidSquare([row, col], board)) {
+                    if (!board[row][col]) {
+                        validMoves.push([row, col]);
+                    } else if (board[row][col].color !== this.color) {
+                        validMoves.push([row, col]);
+                        break;
+                    } else {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+
+        return validMoves;
     }
 }
 
