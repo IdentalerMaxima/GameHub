@@ -1,3 +1,8 @@
+
+if (window.location.pathname !== '/games/Tetris/Tetris.html') {
+    window.location.href = '/games/Tetris/Tetris.html';
+} 
+
 window.onload = () => {
     const
         background = document.getElementById("background"),
@@ -19,7 +24,7 @@ window.onload = () => {
             if (color !== null) {
                 this.color = color;
                 this.img = new Image();
-                this.img.src = `resources/${Tetromino.COLORS[color]}.jpg`
+                this.img.src = `pictures/${Tetromino.COLORS[color]}.jpg`
             }
         }
 
