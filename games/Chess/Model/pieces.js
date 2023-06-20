@@ -270,6 +270,30 @@ class King extends Pieces {
         super(color, square);
         this.image = `images/${color}King.png`;
     }
+
+    getValidMoves(board) {
+        const validMoves = [];
+        const [currentRow, currentCol] = this.square;
+
+        const moveSquares = [
+            [currentRow - 1, currentCol - 1],  // Up-left
+            [currentRow - 1, currentCol],      // Up
+            [currentRow - 1, currentCol + 1],  // Up-right
+            [currentRow, currentCol - 1],      // Left
+            [currentRow, currentCol + 1],      // Right
+            [currentRow + 1, currentCol - 1],  // Down-left
+            [currentRow + 1, currentCol],      // Down
+            [currentRow + 1, currentCol + 1]   // Down-right
+        ];
+
+        for (const moveSquare of moveSquares) {
+            if (this.isValidSquare(moveSquare, board) && (!board[moveSquare[0]][moveSquare[1]] || board[moveSquare[0]][moveSquare[1]].color !== this.color)) {
+                validMoves.push(moveSquare);
+            }
+        }
+
+        return validMoves;
+    }
 }
 
 class Epiece extends Pieces {
