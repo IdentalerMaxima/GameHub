@@ -39,7 +39,7 @@ class ChessView {
   }
 
   getSquareFromTile(tile) {
-    const row = tile.parentNode; 
+    const row = tile.parentNode;
     const rowIndex = Array.from(row.parentNode.children).indexOf(row);
     const colIndex = Array.from(row.children).indexOf(tile);
     return [rowIndex, colIndex]; // Return the square coordinates as [row, column]
@@ -70,16 +70,12 @@ class ChessView {
       tile.classList.remove('selected');
     });
   }
-  
+
 
   isValidMove(tile, selectedPiece) {
     const targetSquare = this.getSquareFromTile(tile);
     const piece = this.getPieceAtSquare(targetSquare);
 
-    if (piece && piece.color === selectedPiece.color) {
-      return false;
-    }
-  
     const validMoves = selectedPiece.getValidMoves(this.model.getBoard());
     return validMoves.some(move => {
       const [row, col] = move;
@@ -89,74 +85,80 @@ class ChessView {
 
   addEventListeners() {
     const tiles = document.querySelectorAll('.chessboard-tile');
-  
+
     tiles.forEach((tile) => {
       tile.addEventListener('click', (event) => {
-        this.handleTileClick(event); 
+        this.handleTileClick(event);
       });
     });
   }
-  
-  handleTileClick(event) {
-  let tile = event.currentTarget;
-  let hasPiece = tile.classList.contains('has-piece');
-  let selectedPiece = this.model.selectedPiece;
-  
 
-  //Nothing is selected and clicked on a tile without a piece
-  if(!hasPiece && !selectedPiece && !tile.classList.contains('can-move')) {
-    console.log('nothing is selected');
-    return;
+  handleTileClick(event) {
+    let tile = event.currentTarget;
+    let hasPiece = tile.classList.contains('has-piece');
+    let selectedPiece = this.model.selectedPiece;
+
+    // if (this.model.turn !== selectedPiece?.color && selectedPiece) {
+    //   console.log('not your turn');
+    //   return;
+    // }
+
+    //Nothing is selected and clicked on a tile without a piece
+    if (!hasPiece && !selectedPiece && !tile.classList.contains('can-move')) {
+      console.log('nothing is selected');
+      return;
+    }
+    //Show moves of selected piece
+    else if (hasPiece && !selectedPiece && !tile.classList.contains('can-move')) {
+      console.log(this.getPieceAtSquare(this.getSquareFromTile(tile)));
+      selectedPiece = this.getPieceAtSquare(this.getSquareFromTile(tile));
+      this.model.selectedPiece = selectedPiece;
+      tile.classList.add('selected');
+      let validMoves = selectedPiece.getValidMoves(this.model.getBoard());
+      this.highlightPossibleMoves(validMoves, tile);
+      console.log(validMoves);
+      return;
+    }
+    //Reselect another piece of the same color
+    else if (hasPiece && selectedPiece && !tile.classList.contains('can-move') && selectedPiece.color === this.getPieceAtSquare(this.getSquareFromTile(tile)).color) {
+      this.resetColors();
+      selectedPiece = this.getPieceAtSquare(this.getSquareFromTile(tile));
+      this.model.selectedPiece = selectedPiece;
+      console.log("selected piece", this.model.selectedPiece);
+      tile.classList.add('selected');
+      const validMoves = selectedPiece.getValidMoves(this.model.getBoard());
+      this.highlightPossibleMoves(validMoves, tile);
+      return;
+    }
+    //Move piece if piece is selected and clicked on a tile it can move to
+    else if (!hasPiece && selectedPiece && tile.classList.contains('can-move')) {
+      let sourceSquare = this.getSquareFromTile(document.querySelector('.selected'));
+      let targetSquare = this.getSquareFromTile(tile);
+      this.movePiece(sourceSquare, targetSquare, selectedPiece);
+      this.model.selectedPiece = null;
+      sourceSquare = null;
+      targetSquare = null;
+      this.resetColors();
+      return;
+    }
+    //Do nothing if piece is selected and clicked on a tile it can't move to
+    else if (hasPiece && selectedPiece && !tile.classList.contains('can-move')) {
+      console.log('model selected piece', this.model.selectedPiece);
+      return;
+    }
+    else if (hasPiece && selectedPiece && tile.classList.contains('can-move') && selectedPiece.color !== this.getPieceAtSquare(this.getSquareFromTile(tile)).color) {
+      let sourceSquare = this.getSquareFromTile(document.querySelector('.selected'));
+      let targetSquare = this.getSquareFromTile(tile);
+      this.movePiece(sourceSquare, targetSquare, selectedPiece);
+      this.model.selectedPiece = null;
+      sourceSquare = null;
+      targetSquare = null;
+      this.resetColors();
+      return;
+    }
+
   }
-  //Show moves of selected piece
-  else if(hasPiece && !selectedPiece && !tile.classList.contains('can-move')) {
-    console.log(this.getPieceAtSquare(this.getSquareFromTile(tile)));
-    selectedPiece = this.getPieceAtSquare(this.getSquareFromTile(tile));
-    this.model.selectedPiece = selectedPiece;
-    tile.classList.add('selected');
-    let validMoves = selectedPiece.getValidMoves(this.model.getBoard());
-    this.highlightPossibleMoves(validMoves, tile);
-    console.log(validMoves);
-    return;
-  }
-  //Reselect another piece of the same color
-  else if(hasPiece && selectedPiece && !tile.classList.contains('can-move') && selectedPiece.color === this.getPieceAtSquare(this.getSquareFromTile(tile)).color) {
-    this.resetColors();
-    selectedPiece = this.getPieceAtSquare(this.getSquareFromTile(tile));
-    this.model.selectedPiece = selectedPiece;
-    console.log("selected piece", this.model.selectedPiece);
-    tile.classList.add('selected');
-    const validMoves = selectedPiece.getValidMoves(this.model.getBoard());
-    this.highlightPossibleMoves(validMoves, tile);
-    return;
-  }
-  //Move piece if piece is selected and clicked on a tile it can move to
-  else if(!hasPiece && selectedPiece && tile.classList.contains('can-move')) {
-    let sourceSquare = this.getSquareFromTile(document.querySelector('.selected'));
-    let targetSquare = this.getSquareFromTile(tile);
-    this.movePiece(sourceSquare, targetSquare, selectedPiece);
-    this.model.selectedPiece = null;
-    sourceSquare = null;
-    targetSquare = null;
-    this.resetColors();
-    return;
-  }
-  //Do nothing if piece is selected and clicked on a tile it can't move to
-  else if(hasPiece && selectedPiece && !tile.classList.contains('can-move')) {
-    console.log('model selected piece', this.model.selectedPiece);
-    return;
-  }
-  else if(hasPiece && selectedPiece && tile.classList.contains('can-move') && selectedPiece.color !== this.getPieceAtSquare(this.getSquareFromTile(tile)).color) {
-    let sourceSquare = this.getSquareFromTile(document.querySelector('.selected'));
-    let targetSquare = this.getSquareFromTile(tile);
-    this.movePiece(sourceSquare, targetSquare, selectedPiece);
-    this.model.selectedPiece = null;
-    sourceSquare = null;
-    targetSquare = null;
-    this.resetColors();
-    return;
-  }
-}
+
   movePiece(sourceSquare, targetSquare, selectedPiece) {
 
     const sourceTile = document.querySelector(`.chessboard-row:nth-child(${sourceSquare[0] + 1}) .chessboard-tile:nth-child(${sourceSquare[1] + 1})`);
@@ -166,14 +168,62 @@ class ChessView {
     targetTile.innerHTML = '';
     targetTile.appendChild(pieceElement);
 
-    
+
     this.model.movePiece(sourceSquare, targetSquare);
     sourceTile.classList.remove('has-piece');
     targetTile.classList.add('has-piece');
 
     selectedPiece.updateSquare(targetSquare);
-    
 
-    console.log(this.model.board);
+    this.changeTurn();
   }
+
+  changeTurn() {
+    if (this.model.turn === 'white') {
+      this.model.turn = 'black';
+    } else {
+      this.model.turn = 'white';
+    }
+
+    const opponentColor = this.model.turn === 'white' ? 'black' : 'white';
+    console.log(this.model.turn);
+
+    if (this.isCheckmate(opponentColor)) {
+      console.log('Checkmate!');
+    }
+  }
+
+  isCheckmate(color) {
+    const kingSquare = this.model.findKing(color);
+    if (!kingSquare) {
+      return false;
+    }
+
+    if (!this.model.isSquareUnderAttack(kingSquare, color)) {
+      return false;
+    }
+
+    const pieces = this.model.getPieces(color);
+    for (const piece of pieces) {
+      const validMoves = piece.getValidMoves(this.model.getBoard());
+      for (const move of validMoves) {
+        const [row, col] = move;
+        const targetPiece = this.model.getPieceAtSquare([row, col]);
+        if (!targetPiece || targetPiece.color !== color) {
+
+          const originalPiece = this.model.getPieceAtSquare(piece.square);
+          this.model.movePiece(piece.square, move);
+          const isStillUnderAttack = this.model.isSquareUnderAttack(kingSquare, color);
+          this.model.movePiece(move, piece.square); 
+
+          if (!isStillUnderAttack) {
+            return false; 
+          }
+        }
+      }
+    }
+
+    return true; 
+  }
+
 }
