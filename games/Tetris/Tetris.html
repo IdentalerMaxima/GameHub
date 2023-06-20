@@ -1,41 +1,34 @@
 <html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="TetrisStyle.css">
-    <link rel="icon" type="image/x-icon" href="pictures/logo.ico">
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tetris</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Aoboshi+One&display=swap" rel="stylesheet">
-
-</head>
-
-<body>
-
-    <div id="wrapper">
-        <div id="left-div">
-            <img src="pictures/logo.png" id="logo">
-            <hr>
-
-            <div id="score-div">
-                <label> Score: </label>
-                <label id="score"></label>
-            </div>
-            <div id="lines-div">
-                <label> Lines: </label>
-                <label id="lines"></label>
-            </div>
-        </div>
-        <div id="game-container">
-            <img src="pictures/background.png" id="background">
-            <canvas id="game-canvas"></canvas>
-        </div>
+  </head>
+  <body>
+    <script src="src/Tetris.js"></script>
+    <style media="screen">
+      body {
+        background-color: steelblue;
+      }
+      #map {
+        display: block;
+        margin: 10px auto 0 auto;
+        border: 1px solid white;
+      }
+      #score {
+        margin: 20px auto;
+        text-align: center;
+        font: 35px Comic Sans MS;
+        color: white;
+      }
+    </style>
+    <div>
+      <div id="score">0</div>
+      <canvas id="map" width="300" height="600"></canvas>
     </div>
-</body>
-
-<script src="Tetris.js"></script>
-
+  </body>
 </html>
