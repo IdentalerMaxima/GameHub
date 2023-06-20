@@ -12,8 +12,8 @@ function loadGame(gameFile) {
 }
 
 //Add event listeners to the buttons
-document.getElementById('game1').addEventListener('click', function () {
-    loadGame('tests/test.js');
+document.getElementById('Tetris').addEventListener('click', function () {
+    loadGame('games/Tetris/Tetris.js');
 });
 
 document.getElementById('chess').addEventListener('click', function () {
