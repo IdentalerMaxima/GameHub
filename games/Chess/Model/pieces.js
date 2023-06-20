@@ -12,7 +12,7 @@ class Pieces {
 
     canMoveToSquare(square, board) {
         const [targetRow, targetCol] = square;
-        const [currentRow, currentCol] = this.square;
+        const [currentRow, currentCol] = square;
       
         if (targetRow < 0 || targetRow >= 8 || targetCol < 0 || targetCol >= 8) {
           return false;
@@ -25,9 +25,9 @@ class Pieces {
         return true;
       }
 
-      clearValidMoves() {
-        this.validMoves = [];
-      }
+    updateSquare(square) {
+        this.square = square;
+    }
 
 }
 
@@ -38,13 +38,11 @@ class Pawn extends Pieces {
     }
 
     getValidMoves(board) {
-        console.log('getValidMoves');
         
         let validMoves = [];
-
-        console.log(validMoves);
         
         let [currentRow, currentCol] = this.square;
+    
         let forwardSquare = [currentRow + this.direction, currentCol];
         if (this.isValidSquare(forwardSquare, board) && !board[forwardSquare[0]][forwardSquare[1]]) {
             validMoves.push(forwardSquare);
@@ -114,10 +112,49 @@ class Knight extends Pieces {
 
 class Bishop extends Pieces {
     constructor(color, square) {
-        super(color, square);
-        this.image = `images/${color}Bishop.png`;
+      super(color, square);
+      this.image = `images/${color}Bishop.png`;
     }
-}
+  
+    getValidMoves(board) {
+      const validMoves = [];
+      const [currentRow, currentCol] = this.square;
+  
+      const directions = [
+        { row: -1, col: -1 }, 
+        { row: -1, col: 1 },  
+        { row: 1, col: -1 },  
+        { row: 1, col: 1 },   
+      ];
+  
+      for (const direction of directions) {
+        let [row, col] = [currentRow, currentCol];
+  
+        while (true) {
+          row += direction.row;
+          col += direction.col;
+  
+          if (this.isValidSquare([row, col], board)) {
+            if (!board[row][col]) {
+              validMoves.push([row, col]);
+            }
+            else if (board[row][col].color !== this.color) {
+              validMoves.push([row, col]);
+              break;
+            }
+            else {
+              break;
+            }
+          } else {
+            break;
+          }
+        }
+      }
+  
+      return validMoves;
+    }
+  }
+  
 
 class Queen extends Pieces {
     constructor(color, square) {

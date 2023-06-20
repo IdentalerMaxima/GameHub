@@ -134,7 +134,7 @@ class ChessView {
   else if(!hasPiece && selectedPiece && tile.classList.contains('can-move')) {
     let sourceSquare = this.getSquareFromTile(document.querySelector('.selected'));
     let targetSquare = this.getSquareFromTile(tile);
-    this.movePiece(sourceSquare, targetSquare);
+    this.movePiece(sourceSquare, targetSquare, selectedPiece);
     this.model.selectedPiece = null;
     sourceSquare = null;
     targetSquare = null;
@@ -146,20 +146,32 @@ class ChessView {
     console.log('model selected piece', this.model.selectedPiece);
     return;
   }
-  
+  else if(hasPiece && selectedPiece && tile.classList.contains('can-move') && selectedPiece.color !== this.getPieceAtSquare(this.getSquareFromTile(tile)).color) {
+    let sourceSquare = this.getSquareFromTile(document.querySelector('.selected'));
+    let targetSquare = this.getSquareFromTile(tile);
+    this.movePiece(sourceSquare, targetSquare, selectedPiece);
+    this.model.selectedPiece = null;
+    sourceSquare = null;
+    targetSquare = null;
+    this.resetColors();
+    return;
+  }
 }
-
-  movePiece(sourceSquare, targetSquare) {
+  movePiece(sourceSquare, targetSquare, selectedPiece) {
 
     const sourceTile = document.querySelector(`.chessboard-row:nth-child(${sourceSquare[0] + 1}) .chessboard-tile:nth-child(${sourceSquare[1] + 1})`);
     const targetTile = document.querySelector(`.chessboard-row:nth-child(${targetSquare[0] + 1}) .chessboard-tile:nth-child(${targetSquare[1] + 1})`);
 
     const pieceElement = sourceTile.querySelector('.chessboard-piece');
+    targetTile.innerHTML = '';
     targetTile.appendChild(pieceElement);
 
+    
     this.model.movePiece(sourceSquare, targetSquare);
     sourceTile.classList.remove('has-piece');
     targetTile.classList.add('has-piece');
+
+    selectedPiece.updateSquare(targetSquare);
     
 
     console.log(this.model.board);
