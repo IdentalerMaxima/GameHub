@@ -3,239 +3,282 @@ if (window.location.pathname !== '/games/Tetris/Tetris.html') {
     window.location.href = '/games/Tetris/Tetris.html';
 } 
 
+const mapWidth = 300
+const mapHeight = 600
+const numberOfRows = 20
+const numberOfCols = 10
+const cellSize = mapWidth / numberOfCols
+const borderSize = 0.2
+
+const zType = [
+  [1, 1, 0],
+  [0, 1, 1],
+  [0, 0, 0],
+]
+
+const sType = [
+  [0, 2, 2],
+  [2, 2, 0],
+  [0, 0, 0],
+]
+
+const iType = [
+  [0, 3, 0, 0],
+  [0, 3, 0, 0],
+  [0, 3, 0, 0],
+  [0, 3, 0, 0],
+]
+
+const lType = [
+  [4, 0, 0],
+  [4, 0, 0],
+  [4, 4, 0],
+]
+
+const jType = [
+  [0, 0, 5],
+  [0, 0, 5],
+  [0, 5, 5],
+]
+
+const oType = [
+  [6, 6],
+  [6, 6],
+]
+
+const tType = [
+  [0, 7, 0],
+  [7, 7, 7],
+  [0, 0, 0],
+]
+
+const blockColors = [
+  'limegreen',
+  'darkorange',
+  'mediumorchid',
+  'dodgerblue',
+  'orangered',
+  'cornflowerblue',
+  'tomato',
+]
+
+const blockTypes = {
+  zType,
+  sType,
+  iType,
+  lType,
+  jType,
+  oType,
+  tType,
+}
+
+class Block {
+  constructor(cells, x, y) {
+    this.cells = cells
+    this.position = { x, y }
+    this.isAlive = true
+  }
+
+  rotate() {
+    const newCells = []
+    for (let i = 0; i < this.cells.length; i++) {
+      newCells[i] = []
+      for (let j = 0; j < this.cells.length; j++) {
+        newCells[i][j] = this.cells[this.cells.length - 1 - j][i]
+      }
+    }
+    this.cells = newCells
+  }
+
+  moveBlockByEvent(e) {
+    switch(e.key) {
+      case 'ArrowLeft': {
+        this.position.x--
+        break
+      }
+      case 'ArrowRight': {
+        this.position.x++
+        break
+      }
+      case 'ArrowDown': {
+        if (this.position.y + this.cells.length < numberOfRows) {
+          this.position.y++
+        }
+        break
+      }
+      case 'ArrowUp': {
+        this.rotate()
+        break
+      }
+    }
+  }
+
+  findCollison(field) {
+    const { x, y } = this.position
+    this.cells.forEach((rows, i) => {
+      rows.forEach((cell, j) => {
+        if (cell && ((y + i >= numberOfRows) || field[y + i][x + j])) {
+          this.isAlive = false
+          return
+        }
+      })
+    })
+  }
+}
+Block.timeToChange = 1000
+
+const canMoveLeft = (block, field) => {
+  const { cells, position } = block
+  const { x, y } = position
+  return !cells.some((rows, i) => {
+    return rows.some((cell, j) => {
+      if (
+        (cell && x + j < 0) ||
+        (cell && x + j >= numberOfCols) ||
+        (cell && field[y + i][x + j])
+      ) return true
+    })
+  })
+  return true
+}
+
+const updateScore = (score) => {
+  const scoreElem = document.getElementById('score')
+  scoreElem.innerHTML = score
+}
+
+const drawField = (field, ctx) => {
+  field.forEach((row, rowIndex) => {
+    row.forEach((cell, columnIndex) => {
+      ctx.fillStyle = cell ? blockColors[cell - 1] : 'lightblue'
+      ctx.strokeStyle = '#555'
+      ctx.lineWidth = borderSize
+
+      const args = [
+        columnIndex * cellSize, rowIndex * cellSize,
+        cellSize, cellSize,
+      ]
+
+      ctx.fillRect(...args)
+      ctx.strokeRect(...args)
+    })
+  })
+}
+
+const { requestAnimationFrame } = window
+const fps = 24
+const timeToMoveDown = 500
+
+let counterOfF = 0
+let prevTime = 0
+let prevPosition = { x: 0, y: 0 }
+let prevBlockCells = [[]]
+
+const render = (game, block, time) => {
+  if (!block) {
+    const arrOfTypes = Object.values(blockTypes)
+    const blockType = arrOfTypes[arrOfTypes.length * Math.random() | 0]
+    const x = ((numberOfCols - blockType.length) / 2) | 0
+    block = new Block(blockType, x, 0)
+    prevPosition = { x, y: 0 }
+    console.log('block', block)
+    addEventListener('keydown', (e) => block.moveBlockByEvent.bind(block)(e))
+  }
+
+  const { ctx, field } = game
+  const { position } = block
+
+  if (time - prevTime > 1000 / fps) {
+    counterOfF++
+    if (counterOfF === (fps * timeToMoveDown) / 1000) {
+      counterOfF = 0
+      if (block && block.isAlive) {
+        position.y++
+      } else {
+        block = null
+      }
+    }
+
+    prevTime = time
+
+    insertIntoArray(prevBlockCells, field, prevPosition.y, prevPosition.x, true)
+
+    const canMove = canMoveLeft(block, field)
+    if (!canMove) {
+      position.x = prevPosition.x
+      block.cells = prevBlockCells
+    }
+
+    if (position.y > prevPosition.y) {
+      position.y = prevPosition.y + 1
+    }
+
+    block.findCollison(field)
+    if (block.isAlive) {
+      insertIntoArray(block.cells, field, position.y, position.x)
+      drawField(field, ctx)
+      prevPosition = Object.assign({}, position)
+      prevBlockCells = [].concat(block.cells)
+    } else if (prevPosition.y > block.cells.length - 1) {
+      insertIntoArray(block.cells, field, prevPosition.y, prevPosition.x)
+      game.field = findFilledRow(field)
+      drawField(game.field, ctx)
+      block = null
+    } else {
+      insertIntoArray(prevBlockCells, field, prevPosition.y, prevPosition.x)
+      const lastBlock = block.cells.filter((row) => !row.every((cell) => !cell)).slice(-prevPosition.y)
+      insertIntoArray(lastBlock, field, 0, position.x)
+      drawField(game.field, ctx)
+      setTimeout(() => { alert('Game Over') }, 0)
+      game.field = generateField(numberOfRows + 4, numberOfCols)
+      updateScore(0)
+      block = null
+    }
+  }
+
+  requestAnimationFrame((time) => render(game, block, time))
+}
+
+const insertIntoArray = (childArr, parrentArr, row, col, clearMode) => {
+  let i = 0
+  while(i < childArr.length) {
+    let j = 0
+    while(j < childArr[i].length) {
+      parrentArr[row + i][col + j] = !clearMode
+        ? childArr[i][j]
+         ? childArr[i][j]
+         : parrentArr[row + i][col + j]
+        : childArr[i][j]
+          ? 0
+          : parrentArr[row + i][col + j]
+      j++
+    }
+    i++
+  }
+}
+
+let score = 0
+const findFilledRow = (field) => {
+  const filteredField = field.filter((row) => row.some((cell) => (cell === 0)))
+  const diff = field.length - filteredField.length
+  score += diff * 100
+  updateScore(score)
+  const filledArr = generateField(diff, numberOfCols)
+  return [...filledArr, ...filteredField]
+}
+
+const generateField = (rows, cols) => {
+  const field = Array.from({length: rows},
+    () => Array.from({length: cols}, () => 0))
+  return field
+}
+
 window.onload = () => {
-    const
-        background = document.getElementById("background"),
-        scoreLbl = document.getElementById("score"),
-        linesLbl = document.getElementById("lines"),
-        canvas = document.getElementById("game-canvas"),
-        ctx = canvas.getContext("2d");
-
-    class Tetromino {
-        static COLORS = ["blue", "green", "yellow", "red", "orange", "light-blue", "purple"];
-        static BLOCK_SIZE = 28;
-        static DELAY = 400;
-        static DELAY_INCREASED = 5;
-
-        constructor(xs, ys, color = null) {
-            this.x = xs;
-            this.y = ys;
-            this.length = xs.length;
-            if (color !== null) {
-                this.color = color;
-                this.img = new Image();
-                this.img.src = `pictures/${Tetromino.COLORS[color]}.jpg`
-            }
-        }
-
-        update(updFunc) {
-            for (let i = 0; i < this.length; ++i) {
-                ctx.clearRect(
-                    this.x[i] * Tetromino.BLOCK_SIZE,
-                    this.y[i] * Tetromino.BLOCK_SIZE,
-                    Tetromino.BLOCK_SIZE,
-                    Tetromino.BLOCK_SIZE
-                );
-
-                updFunc(i);
-            }
-
-            this.draw();
-        }
-
-        draw() {
-            if (!this.img.complete) {
-                this.img.onload = () => this.draw();
-                return;
-            }
-            // Print the current tetromine
-            for (let i = 0; i < this.length; ++i) {
-                ctx.drawImage(
-                    this.img,
-                    this.x[i] * Tetromino.BLOCK_SIZE,
-                    this.y[i] * Tetromino.BLOCK_SIZE,
-                    Tetromino.BLOCK_SIZE,
-                    Tetromino.BLOCK_SIZE
-                );
-            }
-        }
-
-        collides(checkFunc) {
-            for (let i = 0; i < this.length; ++i) {
-                const { x, y } = checkFunc(i);
-                if (x < 0 || x >= FIELD_WIDTH || y < 0 || y >= FIELD_HEIGHT || FIELD[y][x] !== false)
-                    return true;
-            }
-            return false;
-        }
-
-        merge() {
-            for (let i = 0; i < this.length; ++i) {
-                FIELD[this.y[i]][this.x[i]] = this.color;
-            }
-        }
-
-        rotate() {
-            const
-                maxX = Math.max(...this.x),
-                minX = Math.min(...this.x),
-                minY = Math.min(...this.y),
-                nx = [],
-                ny = [];
-
-            if (!this.collides(i => {
-                    nx.push(maxX + minY - tetromino.y[i]);
-                    ny.push(tetromino.x[i] - minX + minY);
-                    return { x: nx[i], y: ny[i] };
-                })) {
-                this.update(i => {
-                    this.x[i] = nx[i];
-                    this.y[i] = ny[i];
-                });
-            }
-        }
-    }
-
-    const
-        FIELD_WIDTH = 10,
-        FIELD_HEIGHT = 20,
-        FIELD = Array.from({ length: FIELD_HEIGHT }),
-        MIN_VALID_ROW = 4,
-        TETROMINOES = [
-            new Tetromino([0, 0, 0, 0], [0, 1, 2, 3]),
-            new Tetromino([0, 0, 1, 1], [0, 1, 0, 1]),
-            new Tetromino([0, 1, 1, 1], [0, 0, 1, 2]),
-            new Tetromino([0, 0, 0, 1], [0, 1, 2, 0]),
-            new Tetromino([0, 1, 1, 2], [0, 0, 1, 1]),
-            new Tetromino([0, 1, 1, 2], [1, 1, 0, 1]),
-            new Tetromino([0, 1, 1, 2], [1, 1, 0, 0])
-        ];
-
-    let tetromino = null,
-        delay,
-        score,
-        lines;
-
-
-
-    (function setup() {
-
-        canvas.style.top = Tetromino.BLOCK_SIZE;
-        canvas.style.left = Tetromino.BLOCK_SIZE;
-
-        ctx.canvas.width = FIELD_WIDTH * Tetromino.BLOCK_SIZE;
-        ctx.canvas.height = FIELD_HEIGHT * Tetromino.BLOCK_SIZE;
-
-        // Scale background
-        const scale = Tetromino.BLOCK_SIZE / 13.83333333333;
-        background.style.width = scale * 166;
-        background.style.height = scale * 304;
-
-        // Offset each block to the middle of the table width
-        const middle = Math.floor(FIELD_WIDTH / 2);
-        for (const t of TETROMINOES) t.x = t.x.map(x => x + middle);
-
-        reset();
-        draw();
-    })();
-
-    function reset() {
-        // Make false all blocks
-        FIELD.forEach((_, y) => FIELD[y] = Array.from({ length: FIELD_WIDTH }).map(_ => false));
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        delay = Tetromino.DELAY;
-        score = 0;
-        lines = 0;
-    }
-
-    function draw() {
-        if (tetromino) {
-
-            // Collision?
-            if (tetromino.collides(i => ({ x: tetromino.x[i], y: tetromino.y[i] + 1 }))) {
-                tetromino.merge();
-                // Prepare for new tetromino
-                tetromino = null;
-
-                // Check for completed rows
-                let completedRows = 0;
-                for (let y = FIELD_HEIGHT - 1; y >= MIN_VALID_ROW; --y)
-                    if (FIELD[y].every(e => e !== false)) {
-                        for (let ay = y; ay >= MIN_VALID_ROW; --ay)
-                            FIELD[ay] = [...FIELD[ay - 1]];
-
-                        ++completedRows;
-                        // Keep the same row
-                        ++y;
-                    }
-
-                if (completedRows) {
-                    // Print againt the table
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    for (let y = MIN_VALID_ROW; y < FIELD_HEIGHT; ++y) {
-                        for (let x = 0; x < FIELD_WIDTH; ++x) {
-                            if (FIELD[y][x] !== false) new Tetromino([x], [y], FIELD[y][x]).draw();
-                        }
-                    }
-
-                    score += [40, 100, 300, 1200][completedRows - 1];
-                    lines += completedRows;
-                } else {
-                    // Check if player has lost
-                    if (FIELD[MIN_VALID_ROW - 1].some(block => block !== false)) {
-                        alert("You have lost!");
-                        reset();
-                    }
-                }
-
-
-            } else
-                tetromino.update(i => ++tetromino.y[i]);
-        }
-        // No tetromino failing
-        else {
-
-            scoreLbl.innerText = score;
-            linesLbl.innerText = lines;
-
-            // Create random tetromino
-            tetromino = (({ x, y }, color) =>
-                new Tetromino([...x], [...y], color)
-            )(
-                TETROMINOES[Math.floor(Math.random() * (TETROMINOES.length - 1))],
-                Math.floor(Math.random() * (Tetromino.COLORS.length - 1))
-            );
-
-            tetromino.draw();
-        }
-
-        setTimeout(draw, delay);
-    }
-
-    // Move
-    window.onkeydown = event => {
-        switch (event.key) {
-            case "ArrowLeft":
-                if (!tetromino.collides(i => ({ x: tetromino.x[i] - 1, y: tetromino.y[i] })))
-                    tetromino.update(i => --tetromino.x[i]);
-                break;
-            case "ArrowRight":
-                if (!tetromino.collides(i => ({ x: tetromino.x[i] + 1, y: tetromino.y[i] })))
-                    tetromino.update(i => ++tetromino.x[i]);
-                break;
-            case "ArrowDown":
-                delay = Tetromino.DELAY / Tetromino.DELAY_INCREASED;
-                break;
-            case " ":
-                tetromino.rotate();
-                break;
-        }
-    }
-    window.onkeyup = event => {
-        if (event.key === "ArrowDown")
-            delay = Tetromino.DELAY;
-    }
-
+  const canvas = document.getElementById('map')
+  const ctx = canvas.getContext('2d')
+  const game = {
+    ctx,
+    field: generateField(numberOfRows + 4, numberOfCols),
+  }
+  render(game)
 }
