@@ -20,8 +20,8 @@ document.getElementById('chess').addEventListener('click', function () {
     loadGame('games/Chess/Chess.js');
 });
 
-document.getElementById('game3').addEventListener('click', function () {
-    loadGame('game3.js');
+document.getElementById('Flappy Bird').addEventListener('click', function () {
+    loadGame('app.js');
 });
 
 document.getElementById('game4').addEventListener('click', function () {
