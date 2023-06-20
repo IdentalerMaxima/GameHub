@@ -1,6 +1,7 @@
 class ChessModel {
     constructor() {
         this.board = [];
+        this.selectedPiece = null;
     }
     createBoard() {
         const board = new Array(8);
