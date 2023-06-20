@@ -79,6 +79,42 @@ class Rook extends Pieces {
         super(color, square);
         this.image = `images/${color}Rook.png`;
     }
+
+    getValidMoves(board) {
+        const validMoves = [];
+        const [currentRow, currentCol] = this.square;
+
+        const directions = [
+            { row: -1, col: 0 },  // Up
+            { row: 1, col: 0 },   // Down
+            { row: 0, col: -1 },  // Left
+            { row: 0, col: 1 }    // Right
+        ];
+
+        for (const direction of directions) {
+            let [row, col] = [currentRow, currentCol];
+
+            while (true) {
+                row += direction.row;
+                col += direction.col;
+
+                if (this.isValidSquare([row, col], board)) {
+                    if (!board[row][col]) {
+                        validMoves.push([row, col]);
+                    } else if (board[row][col].color !== this.color) {
+                        validMoves.push([row, col]);
+                        break;
+                    } else {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+
+        return validMoves;
+    }
 }
 
 class Knight extends Pieces {
