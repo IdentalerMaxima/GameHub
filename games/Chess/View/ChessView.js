@@ -121,14 +121,6 @@ class ChessView {
   }
 }
 
-
-
-  
-  
-
-  
-  
-
   movePiece(sourceSquare, targetSquare) {
     const piece = this.getPieceAtSquare(sourceSquare);
     if (!piece) {
