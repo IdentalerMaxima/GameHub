@@ -25,6 +25,6 @@ document.getElementById('game3').addEventListener('click', function () {
 });
 
 document.getElementById('game4').addEventListener('click', function () {
-    loadGame('game4.js');
+    loadGame('games/flappy bird/app.js');
 });
 
