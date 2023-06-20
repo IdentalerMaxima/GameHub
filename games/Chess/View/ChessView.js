@@ -67,9 +67,9 @@ class ChessView {
     tiles.forEach(tile => {
       tile.style.backgroundColor = '';
       tile.classList.remove('can-move');
+      tile.classList.remove('selected');
     });
   }
-  
   
 
   isValidMove(tile, selectedPiece) {
@@ -98,7 +98,6 @@ class ChessView {
   }
   
   handleTileClick(event) {
-  this.resetColors();
   let tile = event.currentTarget;
   let hasPiece = tile.classList.contains('has-piece');
   let selectedPiece = this.model.selectedPiece;
@@ -107,21 +106,22 @@ class ChessView {
   //Nothing is selected and clicked on a tile without a piece
   if(!hasPiece && !selectedPiece && !tile.classList.contains('can-move')) {
     console.log('nothing is selected');
-    this.model.selectedPiece = null;
     return;
   }
   //Show moves of selected piece
   else if(hasPiece && !selectedPiece && !tile.classList.contains('can-move')) {
+    console.log(this.getPieceAtSquare(this.getSquareFromTile(tile)));
     selectedPiece = this.getPieceAtSquare(this.getSquareFromTile(tile));
     this.model.selectedPiece = selectedPiece;
-    console.log("selected piece", this.model.selectedPiece);
     tile.classList.add('selected');
-    const validMoves = selectedPiece.getValidMoves(this.model.getBoard());
+    let validMoves = selectedPiece.getValidMoves(this.model.getBoard());
     this.highlightPossibleMoves(validMoves, tile);
+    console.log(validMoves);
     return;
   }
   //Reselect another piece of the same color
   else if(hasPiece && selectedPiece && !tile.classList.contains('can-move') && selectedPiece.color === this.getPieceAtSquare(this.getSquareFromTile(tile)).color) {
+    this.resetColors();
     selectedPiece = this.getPieceAtSquare(this.getSquareFromTile(tile));
     this.model.selectedPiece = selectedPiece;
     console.log("selected piece", this.model.selectedPiece);
@@ -132,11 +132,13 @@ class ChessView {
   }
   //Move piece if piece is selected and clicked on a tile it can move to
   else if(!hasPiece && selectedPiece && tile.classList.contains('can-move')) {
-    const sourceSquare = this.getSquareFromTile(document.querySelector('.selected'));
-    const targetSquare = this.getSquareFromTile(tile);
+    let sourceSquare = this.getSquareFromTile(document.querySelector('.selected'));
+    let targetSquare = this.getSquareFromTile(tile);
     this.movePiece(sourceSquare, targetSquare);
     this.model.selectedPiece = null;
-    console.log('model selected piece', this.model.selectedPiece);
+    sourceSquare = null;
+    targetSquare = null;
+    this.resetColors();
     return;
   }
   //Do nothing if piece is selected and clicked on a tile it can't move to
@@ -148,6 +150,7 @@ class ChessView {
 }
 
   movePiece(sourceSquare, targetSquare) {
+
     const sourceTile = document.querySelector(`.chessboard-row:nth-child(${sourceSquare[0] + 1}) .chessboard-tile:nth-child(${sourceSquare[1] + 1})`);
     const targetTile = document.querySelector(`.chessboard-row:nth-child(${targetSquare[0] + 1}) .chessboard-tile:nth-child(${targetSquare[1] + 1})`);
 
@@ -157,6 +160,7 @@ class ChessView {
     this.model.movePiece(sourceSquare, targetSquare);
     sourceTile.classList.remove('has-piece');
     targetTile.classList.add('has-piece');
+    
 
     console.log(this.model.board);
   }

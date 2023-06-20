@@ -3,7 +3,6 @@ class Pieces {
         this.color = color;
         this.square = square;
         this.direction = color === 'white' ? -1 : 1;
-        const validMoves = [];
     }
 
     isValidSquare(square) {
@@ -29,11 +28,7 @@ class Pieces {
       clearValidMoves() {
         this.validMoves = [];
       }
-    
-      updateValidMoves(board) {
-        this.clearValidMoves();
-        return this.getValidMoves(board);
-      }
+
 }
 
 class Pawn extends Pieces {
@@ -43,21 +38,26 @@ class Pawn extends Pieces {
     }
 
     getValidMoves(board) {
-        const validMoves = [];
-        const [currentRow, currentCol] = this.square;
-        const forwardSquare = [currentRow + this.direction, currentCol];
+        console.log('getValidMoves');
+        
+        let validMoves = [];
+
+        console.log(validMoves);
+        
+        let [currentRow, currentCol] = this.square;
+        let forwardSquare = [currentRow + this.direction, currentCol];
         if (this.isValidSquare(forwardSquare, board) && !board[forwardSquare[0]][forwardSquare[1]]) {
             validMoves.push(forwardSquare);
         }
-        const doubleForwardSquare = [currentRow + 2 * this.direction, currentCol];
+        let doubleForwardSquare = [currentRow + 2 * this.direction, currentCol];
         if (this.isFirstMove() && this.isValidSquare(doubleForwardSquare, board) && !board[doubleForwardSquare[0]][doubleForwardSquare[1]]) {
             validMoves.push(doubleForwardSquare);
         }
-        const attackSquares = [
+        let attackSquares = [
             [currentRow + this.direction, currentCol - 1],
             [currentRow + this.direction, currentCol + 1]
         ];
-        for (const attackSquare of attackSquares) {
+        for (let attackSquare of attackSquares) {
             if (this.isValidSquare(attackSquare, board) && this.hasOpponentPiece(attackSquare, board)) {
                 validMoves.push(attackSquare);
             }
