@@ -15,8 +15,6 @@ const tHeight = canvas.height / scale;
 
 
 
-
-
 const pieces = [
     [
         [1, 1],
@@ -74,7 +72,6 @@ const player={
     matrix: null,
     color: null
 }
-
 
 
 rand = Math.floor(Math.random() * pieces.length);
@@ -261,5 +258,8 @@ document.addEventListener("keydown", event => {
 
 });
 
+function startTetris() {
+
 initArena();
 update();
+}

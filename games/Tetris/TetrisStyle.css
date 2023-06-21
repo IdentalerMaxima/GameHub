@@ -10,3 +10,16 @@ html, body {
     right: 0;
     left: 0;
 }
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #af4c93;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #d12363;
+  }
