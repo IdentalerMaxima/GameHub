@@ -6,10 +6,10 @@
     <title>Tetris</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" type="text/css" href="TetrisStyle.css">
     <link href="https://fonts.googleapis.com/css2?family=Aoboshi+One&display=swap" rel="stylesheet">
   </head>
   <body>
-    <script src="src/Tetris.js"></script>
     <style media="screen">
       body {
         background-color: steelblue;
@@ -25,10 +25,11 @@
         font: 35px Comic Sans MS;
         color: white;
       }
+   
     </style>
-    <div>
       <div id="score">0</div>
-      <canvas id="map" width="300" height="600"></canvas>
-    </div>
+      <canvas id="canvas" width="220" height="400"></canvas>
+      <script src="./Tetris.js"></script>
+
   </body>
 </html>

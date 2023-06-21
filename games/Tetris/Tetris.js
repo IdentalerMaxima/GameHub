@@ -3,282 +3,263 @@ if (window.location.pathname !== '/games/Tetris/Tetris.html') {
     window.location.href = '/games/Tetris/Tetris.html';
 } 
 
-const mapWidth = 300
-const mapHeight = 600
-const numberOfRows = 20
-const numberOfCols = 10
-const cellSize = mapWidth / numberOfCols
-const borderSize = 0.2
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
 
-const zType = [
-  [1, 1, 0],
-  [0, 1, 1],
-  [0, 0, 0],
-]
+const scale =20;
 
-const sType = [
-  [0, 2, 2],
-  [2, 2, 0],
-  [0, 0, 0],
-]
+ctx.scale(scale,scale);
 
-const iType = [
-  [0, 3, 0, 0],
-  [0, 3, 0, 0],
-  [0, 3, 0, 0],
-  [0, 3, 0, 0],
-]
+const tWidth = canvas.width / scale;
+const tHeight = canvas.height / scale;
 
-const lType = [
-  [4, 0, 0],
-  [4, 0, 0],
-  [4, 4, 0],
-]
 
-const jType = [
-  [0, 0, 5],
-  [0, 0, 5],
-  [0, 5, 5],
-]
 
-const oType = [
-  [6, 6],
-  [6, 6],
-]
 
-const tType = [
-  [0, 7, 0],
-  [7, 7, 7],
-  [0, 0, 0],
-]
 
-const blockColors = [
-  'limegreen',
-  'darkorange',
-  'mediumorchid',
-  'dodgerblue',
-  'orangered',
-  'cornflowerblue',
-  'tomato',
-]
+const pieces = [
+    [
+        [1, 1],
+        [1, 1]
+    ],
+    [
+        [0, 2, 0, 0],
+        [0, 2, 0, 0],
+        [0, 2, 0, 0],
+        [0, 2, 0, 0]
+    ],
+    [
+        [0, 0, 0],
+        [3, 3, 0],
+        [0, 3, 3]
+    ],
+    [
+        [0, 0, 0],
+        [0, 4, 4],
+        [4, 4, 0]
+    ],
+    [
+        [5, 0, 0],
+        [5, 0, 0],
+        [5, 5, 0]
+    ],
+    [
+        [0, 0, 6],
+        [0, 0, 6],
+        [0, 6, 6]
+    ],
+    [
+        [0, 0, 0],
+        [7, 7, 7],
+        [0, 7, 0]
+    ]
+];
 
-const blockTypes = {
-  zType,
-  sType,
-  iType,
-  lType,
-  jType,
-  oType,
-  tType,
+const colors = [
+    null,
+    '#FF0D72',
+    '#0DC2FF',
+    '#0DFF72',
+    '#F538FF',
+    '#FF8E0D',
+    '#FFE138',
+    '#3877FF'
+];
+
+let arena=[];
+let rand;
+
+const player={
+    pos: {x: 0, y: 1},
+    matrix: null,
+    color: null
 }
 
-class Block {
-  constructor(cells, x, y) {
-    this.cells = cells
-    this.position = { x, y }
-    this.isAlive = true
-  }
 
-  rotate() {
-    const newCells = []
-    for (let i = 0; i < this.cells.length; i++) {
-      newCells[i] = []
-      for (let j = 0; j < this.cells.length; j++) {
-        newCells[i][j] = this.cells[this.cells.length - 1 - j][i]
-      }
-    }
-    this.cells = newCells
-  }
 
-  moveBlockByEvent(e) {
-    switch(e.key) {
-      case 'ArrowLeft': {
-        this.position.x--
-        break
-      }
-      case 'ArrowRight': {
-        this.position.x++
-        break
-      }
-      case 'ArrowDown': {
-        if (this.position.y + this.cells.length < numberOfRows) {
-          this.position.y++
+rand = Math.floor(Math.random() * pieces.length);
+player.matrix = pieces[rand];
+player.color = colors[rand+1];
+
+
+
+function drawMatrix(matrix,x,y){
+    for (let i=0; i < matrix.length; i++)
+    {
+        for (let j=0; j<matrix[i].length; j++)
+        {
+            if (matrix[i] [j] )
+            ctx.fillRect(x + j, y +i, 1, 1);
+    }   }
+}
+
+
+
+function rotateMatrix(matrix, dir) {
+    let newMatrix = [];
+
+    for (let i in matrix)
+        newMatrix.push([]);
+
+    if (dir === 1) {
+        for (let i = 0; i < matrix.length; i++) {
+            for (let j = 0; j < matrix[i].length; j++) {
+                newMatrix[j][matrix.length - i - 1] = matrix[i][j];
+            }
         }
-        break
-      }
-      case 'ArrowUp': {
-        this.rotate()
-        break
-      }
-    }
-  }
-
-  findCollison(field) {
-    const { x, y } = this.position
-    this.cells.forEach((rows, i) => {
-      rows.forEach((cell, j) => {
-        if (cell && ((y + i >= numberOfRows) || field[y + i][x + j])) {
-          this.isAlive = false
-          return
-        }
-      })
-    })
-  }
-}
-Block.timeToChange = 1000
-
-const canMoveLeft = (block, field) => {
-  const { cells, position } = block
-  const { x, y } = position
-  return !cells.some((rows, i) => {
-    return rows.some((cell, j) => {
-      if (
-        (cell && x + j < 0) ||
-        (cell && x + j >= numberOfCols) ||
-        (cell && field[y + i][x + j])
-      ) return true
-    })
-  })
-  return true
-}
-
-const updateScore = (score) => {
-  const scoreElem = document.getElementById('score')
-  scoreElem.innerHTML = score
-}
-
-const drawField = (field, ctx) => {
-  field.forEach((row, rowIndex) => {
-    row.forEach((cell, columnIndex) => {
-      ctx.fillStyle = cell ? blockColors[cell - 1] : 'lightblue'
-      ctx.strokeStyle = '#555'
-      ctx.lineWidth = borderSize
-
-      const args = [
-        columnIndex * cellSize, rowIndex * cellSize,
-        cellSize, cellSize,
-      ]
-
-      ctx.fillRect(...args)
-      ctx.strokeRect(...args)
-    })
-  })
-}
-
-const { requestAnimationFrame } = window
-const fps = 24
-const timeToMoveDown = 500
-
-let counterOfF = 0
-let prevTime = 0
-let prevPosition = { x: 0, y: 0 }
-let prevBlockCells = [[]]
-
-const render = (game, block, time) => {
-  if (!block) {
-    const arrOfTypes = Object.values(blockTypes)
-    const blockType = arrOfTypes[arrOfTypes.length * Math.random() | 0]
-    const x = ((numberOfCols - blockType.length) / 2) | 0
-    block = new Block(blockType, x, 0)
-    prevPosition = { x, y: 0 }
-    console.log('block', block)
-    addEventListener('keydown', (e) => block.moveBlockByEvent.bind(block)(e))
-  }
-
-  const { ctx, field } = game
-  const { position } = block
-
-  if (time - prevTime > 1000 / fps) {
-    counterOfF++
-    if (counterOfF === (fps * timeToMoveDown) / 1000) {
-      counterOfF = 0
-      if (block && block.isAlive) {
-        position.y++
-      } else {
-        block = null
-      }
-    }
-
-    prevTime = time
-
-    insertIntoArray(prevBlockCells, field, prevPosition.y, prevPosition.x, true)
-
-    const canMove = canMoveLeft(block, field)
-    if (!canMove) {
-      position.x = prevPosition.x
-      block.cells = prevBlockCells
-    }
-
-    if (position.y > prevPosition.y) {
-      position.y = prevPosition.y + 1
-    }
-
-    block.findCollison(field)
-    if (block.isAlive) {
-      insertIntoArray(block.cells, field, position.y, position.x)
-      drawField(field, ctx)
-      prevPosition = Object.assign({}, position)
-      prevBlockCells = [].concat(block.cells)
-    } else if (prevPosition.y > block.cells.length - 1) {
-      insertIntoArray(block.cells, field, prevPosition.y, prevPosition.x)
-      game.field = findFilledRow(field)
-      drawField(game.field, ctx)
-      block = null
     } else {
-      insertIntoArray(prevBlockCells, field, prevPosition.y, prevPosition.x)
-      const lastBlock = block.cells.filter((row) => !row.every((cell) => !cell)).slice(-prevPosition.y)
-      insertIntoArray(lastBlock, field, 0, position.x)
-      drawField(game.field, ctx)
-      setTimeout(() => { alert('Game Over') }, 0)
-      game.field = generateField(numberOfRows + 4, numberOfCols)
-      updateScore(0)
-      block = null
+        for (let i = 0; i < matrix.length; i++) {
+            for (let j = 0; j < matrix[i].length; j++) {
+                newMatrix[matrix.length - j - 1][i] = matrix[i][j];
+            }
+        }
     }
-  }
 
-  requestAnimationFrame((time) => render(game, block, time))
+    return newMatrix;
 }
 
-const insertIntoArray = (childArr, parrentArr, row, col, clearMode) => {
-  let i = 0
-  while(i < childArr.length) {
-    let j = 0
-    while(j < childArr[i].length) {
-      parrentArr[row + i][col + j] = !clearMode
-        ? childArr[i][j]
-         ? childArr[i][j]
-         : parrentArr[row + i][col + j]
-        : childArr[i][j]
-          ? 0
-          : parrentArr[row + i][col + j]
-      j++
+function collides(player, arena) {
+    for (let i = 0; i < player.matrix.length; i++) {
+        for (let j = 0; j < player.matrix[i].length; j++) {
+            if (player.matrix[i][j] && arena[player.pos.y + i + 1][player.pos.x + j + 1])
+                return 1;
+        }
     }
-    i++
-  }
+
+    return 0;
 }
 
-let score = 0
-const findFilledRow = (field) => {
-  const filteredField = field.filter((row) => row.some((cell) => (cell === 0)))
-  const diff = field.length - filteredField.length
-  score += diff * 100
-  updateScore(score)
-  const filledArr = generateField(diff, numberOfCols)
-  return [...filledArr, ...filteredField]
+function mergeArena(matrix, x, y) {
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
+            arena[y+i+1][x+j+1] = arena[y+i+1][x+j+1] || matrix[i][j];
+        }
+    }
 }
 
-const generateField = (rows, cols) => {
-  const field = Array.from({length: rows},
-    () => Array.from({length: cols}, () => 0))
-  return field
+function clearBlocks() {
+    for (let i = 1; i < arena.length-2; i++) {
+        let clear = 1;
+
+        for (let j = 1; j < arena[i].length-1; j++) {
+            if (!arena[i][j])
+                clear = 0;
+        }
+
+        if (clear) {
+            let r = new Array(tWidth).fill(0);
+            r.push(1);
+            r.unshift(1);
+
+            arena.splice(i, 1);
+            arena.splice(1, 0, r);
+        }
+    }
 }
 
-window.onload = () => {
-  const canvas = document.getElementById('map')
-  const ctx = canvas.getContext('2d')
-  const game = {
-    ctx,
-    field: generateField(numberOfRows + 4, numberOfCols),
-  }
-  render(game)
+function drawArena() {
+    for (let i = 1; i < arena.length-2; i++) {
+        for (let j = 1; j < arena[i].length-1; j++) {
+            if (arena[i][j]) {
+                ctx.fillStyle = colors[arena[i][j]];
+                ctx.fillRect(j-1, i-1, 1, 1);
+            }
+        }
+    }
 }
+
+function initArena() {
+    arena = [];
+
+    const r = new Array(tWidth + 2).fill(1);
+    arena.push(r);
+
+    for (let i = 0; i < tHeight; i++) {
+        let row = new Array(tWidth).fill(0);
+        row.push(1);
+        row.unshift(1);
+
+        arena.push(row);
+    }
+
+    arena.push(r);
+    arena.push(r);
+}
+
+function gameOver() {
+    for (let j = 1; j < arena[1].length-1; j++)
+        if (arena[1][j])
+            return initArena();
+
+    return;
+}
+
+let interval = 1000;
+let lastTime = 0;
+let count = 0;
+
+function update(time = 0) {
+
+    const dt = time - lastTime;
+    lastTime = time;
+    count += dt;
+
+    if (count >= interval) {
+        player.pos.y++;
+        count = 0;
+    }
+
+    if (collides(player, arena)) {
+        mergeArena(player.matrix, player.pos.x, player.pos.y-1);
+        clearBlocks();
+        gameOver();
+
+        player.pos.y = 1;
+        player.pos.x = 0;
+
+        rand = Math.floor(Math.random() * pieces.length);
+        player.matrix = pieces[rand];
+        player.color = colors[rand+1];
+
+        interval = 1000;
+    }
+
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    drawArena();
+    ctx.fillStyle = player.color;
+    drawMatrix(player.matrix, player.pos.x, player.pos.y);
+
+    requestAnimationFrame(update);
+}
+
+
+
+
+
+document.addEventListener("keydown", event => {
+
+    if (event.keyCode === 37 && interval-1) {
+        player.pos.x--;
+        if (collides(player, arena))
+            player.pos.x++;
+    } else if (event.keyCode === 39 && interval-1) {
+        player.pos.x++;
+        if (collides(player, arena))
+            player.pos.x--;
+    } else if (event.keyCode === 40) {
+        player.pos.y++;
+        count = 0;
+    } else if (event.keyCode === 38) {
+        player.matrix = rotateMatrix(player.matrix, 1);
+        if (collides(player, arena))
+            player.matrix = rotateMatrix(player.matrix, -1);
+    } else if (event.keyCode === 32) {
+        interval = 1;
+    }
+
+});
+
+initArena();
+update();
