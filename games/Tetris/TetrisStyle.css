@@ -23,3 +23,25 @@ button {
   button:hover {
     background-color: #d12363;
   }
+
+  
+  .rules {
+    flex: 1;
+    margin-right: 20px;
+  }
+  
+  .rules h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .rules ul {
+    list-style-type: disc;
+    padding-left: 50px;
+    list-style: none
+  }
+  
+  .canvas-container {
+    flex: 1;
+  }
+  

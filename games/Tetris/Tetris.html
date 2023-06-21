@@ -27,14 +27,28 @@
       }
    
     </style>
-      <div id="score">0</div>
-      <canvas id="canvas" width="220" height="400"></canvas>
-      <script src="./Tetris.js"></script>
 
-      <div id="StartButton">
-        <button onclick="startTetris()">Start Tetris</button>
+    <div class="container">
+        <div id="score">0</div>
+        <canvas id="canvas" width="220" height="400"></canvas>
+        <script src="./Tetris.js"></script>
+
+        <div id="StartButton">
+          <button onclick="startTetris()">Start Tetris</button>
+        </div>
+
+
+        <div class="rules">
+          <h2>Game Rules</h2>
+          <ul>
+            <li>Use the left and right arrow keys to move the object horizontally.</li>
+            <li>Press the up arrow key to rotate the object.</li>
+            <li>Press the down arrow key to fasten the object.</li>
+          </ul>
+        </div>
+        <div> <p>(Click space to start again!)</p></div>
+
       </div>
-
-    </div>
+     </div>
   </body>
 </html>
