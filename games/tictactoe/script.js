@@ -2,7 +2,6 @@ if (window.location.pathname !== '/games/tictactoe/index.html') {
     window.location.href = '/games/tictactoe/index.html';
 } 
 
-let playerText = document.getElementById('playerText');
 let restartButton = document.getElementById('restartButton');
 let boxes = Array.from(document.getElementsByClassName('box'));
 
@@ -26,7 +25,6 @@ function boxClicked(e){
         e.target.innerText = player;
 
         if(playerWin() !== false ){
-            playerText = '${player} has won!';
             let winning_blocks = playerWin();
 
             winning_blocks.map(box => boxes[box].style.backgroundColor=winnerIndicator);
@@ -69,8 +67,6 @@ function restart (){
         box.innerText = ''
         box.style.backgroundColor = ''
     })
-
-    playerText = 'Tic Tac Toe';
 
     player = X;
 }
