@@ -1,1 +1,0 @@
-window.location.href = 'tests/test.html';
