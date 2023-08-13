@@ -4,7 +4,6 @@ function loadGame(gameFile) {
     var gameContainer = document.getElementById('gameContainer');
     gameContainer.innerHTML = '';
 
-
     var script = document.createElement('script');
     script.src = gameFile;
 
